@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- no need of for loop because post is only one object as we are using .get() in views -->
+<div class="row">
+	<div class="col-6">
+{{post.title}}<br>
+{{post.description}}<br>
+<img src="{{post.image.url}}"><br>
+Created at : {{post.created_at}}<br>
+Created By : {{post.user}}<br>
+Updated at : {{post.updated_at}}<br>
+<span id="likes">{{post.likes}}</span> likes
+<button class ="btn btn-info" onclick="onClick()" >Like</button>
+<!-- <a href="">Comment</a> -->
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	function onClick()
+	{
+		// alert('button clicked..')
+		$.ajax({
+			url : "{% url 'myapp:like' %}",
+			data : {'i':{{post.id}}},
+			dataType : 'json',
+			success : function(data){
+				// alert('success')
+				document.getElementById('likes').innerHTML = data.i
+			}
+		})
+	}
+</script>
+<div class="col-6">
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input class ="btn btn-primary " type="submit" value="Submit">
+</form>
+</div>
+</div>
+<br>
+<h5>Comments</h5>
+{% if comments %}
+{% for i in comments %}
+{{i.comment}}<br>
+at {{i.created_at}} by {{i.user}}<br>
+<hr>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
